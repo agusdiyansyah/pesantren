@@ -6,13 +6,17 @@
 
 	class up
 	{
-		public $file_name;
+		public $return_name;
+		private $file_name;
+		private $file_name_no_ext;
 		private $tmp_location;
 		private $file_type;
 		private $file_size;
 		private $file_err_msg;
 		private $fileExt;
 		private $upload_folder;
+		private $enc_name;
+		private $copy;
 
 		private $r_w;
 		private $r_h;
@@ -20,7 +24,7 @@
 		private $t_w;
 		private $t_h;
 
-		public function upload($in, $maxsize = '', $Ext_filter = '', $upload_folder = '')
+		public function upload($in, $maxsize = '', $Ext_filter = '', $upload_folder = '', $enc = false)
 		{
 			if (is_array($in)) {
 				$parse          = $in['name'];
@@ -36,17 +40,20 @@
 				$parse = $in;
 			}
 			$maxsize = $maxsize*1048576;
-			$this->file_name 	 = $_FILES[$parse]["name"];
+			$this->file_name 	 = strtolower($_FILES[$parse]["name"]);
 			$this->tmp_location	 = $_FILES[$parse]["tmp_name"];
 			$this->file_type 	 = $_FILES[$parse]["type"];
 			$this->file_size 	 = $_FILES[$parse]["size"];
 			$this->file_err_msg  = $_FILES[$parse]["error"];
 			$ext         		 = explode(".", $this->file_name);
-			$this->fileExt 		 = strtolower(end($ext));
+			$this->fileExt 		 = end($ext);
 			$this->upload_folder = $upload_folder;
+			$this->enc_name 	 = $enc;
+			$this->copy 	 	 = '';
+			$this->file_name_no_ext = preg_replace('/\\.[^.\\s]{3,4}$/', '', $this->file_name);
 
 			if (!$this->tmp_location) { 
-			    echo "ERROR: -_- pilih filenya dulu.";
+			    echo "ERROR: -_- pilih filenya dulu. ".$this->file_name;
 			    exit();
 			} else if($this->file_size > $maxsize) { 
 			    echo "ERROR: ukuran filenya kegedean, file gx bolah lbh besar dari " . $maxsize . " Mb.";
@@ -59,7 +66,25 @@
 			    exit();
 			}
 
-			$moveResult = move_uploaded_file($this->tmp_location, $upload_folder.$this->file_name);
+			$dir = opendir($this->upload_folder);
+			$no = 0;
+			while ($file = readdir($dir)) {
+				if ($file=="." or $file=="..")continue; 
+				if ($file == $this->file_name) {
+					$no++;
+				}
+			}
+			if ($no>0) {
+				$this->copy = '-copy-'.$no;
+			}
+
+			if ($enc) {
+				$moveResult = move_uploaded_file($this->tmp_location, $upload_folder.md5($this->file_name_no_ext).$this->copy.'.'.$this->fileExt);
+				$this->return_name = md5($this->file_name_no_ext).$this->copy.'.'.$this->fileExt;
+			} else {
+				$moveResult = move_uploaded_file($this->tmp_location, $upload_folder.$this->file_name_no_ext.$this->copy.'.'.$this->fileExt);
+				$this->return_name = $this->file_name_no_ext.$this->copy.'.'.$this->fileExt;
+			}
 
 			if ($moveResult != true) {
 			    echo "ERROR: anda kurang beruntung :D | coba lagi <br> gagal upload";
@@ -78,8 +103,10 @@
 	        }
 			$this->fileExt = empty($ext) ? $this->fileExt : $ext;
 			$prefix = empty($prefix) ? 'syah_' : $prefix;
-			$target = $this->upload_folder.$this->file_name;
-			$newcopy = $this->upload_folder.$prefix.$this->file_name;
+
+			$target = $this->upload_folder.$this->return_name;
+			$newcopy = $this->upload_folder.$prefix.$this->return_name;
+
 	        list($w_orig, $h_orig) = getimagesize($target);
 	        $scale_ratio = $w_orig / $h_orig;
 	        if (($w / $h) > $scale_ratio) {
