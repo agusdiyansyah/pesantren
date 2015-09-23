@@ -29,7 +29,6 @@ $(document).ready(function() {
 				required:true
 			},
 			file:{
-				required:true,
 				accept: 'image/*'
 			},
 			date:{
@@ -51,7 +50,6 @@ $(document).ready(function() {
 				required: 'Item pemasukkan dana tidak boleh kosong'
 			},
 			file:{
-				required: 'file tidak boleh kosong',
 				accept: 'file harus berupa gambar'
 			},
 			date:{
@@ -96,7 +94,7 @@ $(document).ready(function() {
 				success: function (json) {
 					if (json.stat) {
 						dtable.draw();
-						// bersih();
+						bersih();
 						total('.total-kredit', engine);
 						// $('.sub-btn').prop('disable', false);
 					};
@@ -116,7 +114,17 @@ $(document).ready(function() {
 		var meta = $(this).data('meta');
 		var kredit = $(this).data('kredit');
 		var memo = $(this).data('memo');
-		var img = '<a href="" class="thumbnail" data-src="'+file+'" data-toggle="modal" data-target="#myModal"><img src="vendor/dist/file/syah_'+file+'"></a>';
+		var img;
+		if (file != '') {
+			img = 	'<a href="" class="thumbnail thumb-img" style="margin-bottom:0px !important; border-radius:0 !important" data-src="'+file+'" data-toggle="modal" data-target="#myModal">'+
+						'<img style="width:100%" src="vendor/dist/file/syah_'+file+'">'+
+					'</a>'+
+					'<a href="" data-src="'+file+'" data-toggle="modal" data-target="#myModal" class="thumb-img btn bg-teal btn-flat" style="width:50%"><i class="fa fa-image"></i> &nbsp Lihat</a>'+
+					'<a href="" class="btn bg-maroon btn-flat rm-img" style="width:50%"><i class="fa fa-times"></i> &nbsp Hapus</a>'+
+					'<hr>';
+		} else{
+			img = 'No File';
+		};
 		var id = $(this).data('id');
 
 		$('.sub-btn').html('Update');
@@ -127,23 +135,106 @@ $(document).ready(function() {
 		$('.date').val(date);
 		$('#inputJenis').val(meta);
 		$('.name').val(name);
+		$('.file-kredit').val(file);
 		$('.img').html(img);
 		$('.memo').val(memo);
 		$('.kredit').val(kredit);
 		$('.old-kredit').val(kredit);
 	});
 
-	$('.form-kredit').on('click', '.thumbnail', function(event) {
+	$('.form-kredit').on('click', '.thumb-img', function(event) {
 		event.preventDefault();
-		var img = $('.thumbnail').data('src');
+		var img = $('.form-kredit .thumbnail').data('src');
 		$('.modal-body').html('<div class="thumbnail"><img src="vendor/dist/file/'+img+'"></div>');
-		$('.ok-modal').remove();
+		$('.ok-modal').css('display', 'none');
+		$('.modal-title').html(img);
+	});
+
+	$('.form-kredit').on('click', '.rm-img', function(event) {
+		event.preventDefault();
+		$('.file-stat').val('0');
+		$('.img').html('')
 	});
 
 	$('.rm-btn').on('click', '.bersih', function(event) {
 		event.preventDefault();
 
 		bersih();
+	});
+
+	$('.list-kredit').on('click', '.delete-row', function(event) {
+		event.preventDefault();
+		$('.ok-modal').css('display', 'inline-block');
+
+		var no 		= $(this).data('no');
+		var date 	= $(this).data('date');
+		var jenis 	= $(this).data('jenis');
+		var name 	= $(this).data('name');
+		var kredit 	= $(this).data('kredit');
+		var memo 	= $(this).data('memo');
+		var file 	= $(this).data('file');
+		var id 		= $(this).data('id');
+		var img;
+		if (file != '') {
+			img = '<div class="thumbnail"><img src="vendor/dist/file/'+file+'" alt=""></div>';
+		} else{
+			img = '<div class="text-center" style="color:silver"><h3>No File</h3></div>';
+		};
+
+		bersih();
+
+		$('.modal-title').html('Anda yakin akan menghapus data berikut !!!');
+
+		$('.modal-body').html(''+
+			'<table class="table table-hover">'+
+				'<thead>'+
+					'<tr>'+
+						'<th>No</th>'+
+						'<th>Tanggal</th>'+
+						'<th>Jenis Pengeluaran</th>'+
+						'<th>Item Pengeluaran Dana</th>'+
+						'<th>Jumlah Pengeluaran</th>'+
+						'<th>Memo</th>'+
+					'</tr>'+
+				'</thead>'+
+				'<tr>'+
+					'<td>'+no+'</td>'+
+					'<td>'+date+'</td>'+
+					'<td>'+jenis+'</td>'+
+					'<td>'+name+'</td>'+
+					'<td>Rp.'+kredit+'</td>'+
+					'<td>'+memo+'</td>'+
+				'</tr>'+
+			'</table>'+img+
+		'');
+
+		$('.ok-modal').click(function(event) {
+			event.preventDefault();
+			var dtable = $(".list-kredit").DataTable();
+			$.ajax({
+				url: engine,
+				type: 'post',
+				dataType: 'json',
+				data: {kredit: kredit, id: id, file: file, ac: 'del'},
+				success: function (json) {
+					if (json.stat) {
+						$('#myModal').modal('hide');
+						dtable.draw();
+						bersih();
+						total ('.total-kredit', engine);
+					};
+				}
+			})
+			.done(function() {
+				console.log("success");
+			})
+			.fail(function() {
+				console.log("error");
+			})
+			.always(function() {
+				console.log("complete");
+			});
+		});
 	});
 
 
@@ -166,6 +257,8 @@ function getJenis () {
 
 function bersih () {
 	$('.ac-kredit').val('add');
+	$('.file-stat').val('1');
+	$('.file-kredit').val('');
 	$('.id-kredit').val('');
 
 	$('.date').val('');
@@ -178,6 +271,6 @@ function bersih () {
 	$('.old-kredit').val('');
 
 	$('.bersih').remove();
-	$('.thumbnail').remove();
+	$('.img').html('');
 	$('.sub-btn').html('Submit');
 }

@@ -90,6 +90,7 @@
 										data-name = '$row[name]'
 										data-memo = '$row[memo]'
 										data-kredit = '$row[kredit]'
+										data-file = '$row[file]'
 										data-id = '$row[kid]'
 										data-no = '$no'
 
@@ -120,42 +121,65 @@
 				$kredit	= @mysql_real_escape_string($_POST['kredit']);
 				$memo	= @mysql_real_escape_string($_POST['memo']);
 
-				$up = new up;
-				$proses = $up->upload('file', '5', 'jpg|png|gif', '../../../vendor/dist/file/')->resize(200,200)->file_name;
-
-				if ($proses) {
-					$data = array(
-						"date" 		=> $date,
-						"jenis" 	=> $jenis,
-						"name" 		=> $name,
-						"kredit" 	=> $kredit,
-						"memo" 		=> (empty($memo)) ? '-' : $memo,
-						"file" 		=> $proses,					
-					);
-					$kid = $sql -> db_Insert("kredit", $data);
-					if($kid){
-						$meta = $sql -> db_Update("meta", "`value`=`value`+$kredit  WHERE `type`=2" );
-						echo json_encode(array("stat"=>true,"msg"=>'Success',"kid"=>$kid));
-					}else{
-						echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
+				$file = '';
+				if (!empty($_FILES['file']['name'])) {
+					$up = new up;
+					$proses = $up->upload('file', '5', 'jpg|png|gif', '../../../vendor/dist/file/')->resize(200,200)->return_name;
+					if ($proses) {
+						$file = $proses;
 					}
+				}
+
+				$data = array(
+					"date" 		=> $date,
+					"jenis" 	=> $jenis,
+					"name" 		=> $name,
+					"kredit" 	=> $kredit,
+					"memo" 		=> (empty($memo)) ? '-' : $memo,
+					"file" 		=> $file,					
+				);
+				$kid = $sql -> db_Insert("kredit", $data);
+				if($kid){
+					$meta = $sql -> db_Update("meta", "`value`=`value`+$kredit  WHERE `type`=2" );
+					echo json_encode(array("stat"=>true,"msg"=>'Success',"kid"=>$kid));
+				}else{
+					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
 				}
 			break;
 
 			case 'up':
-				$date	= @mysql_real_escape_string($_POST['date']);
-				$jenis	= @mysql_real_escape_string($_POST['jenis']);
-				$name	= @mysql_real_escape_string($_POST['name']);
-				$kredit	= @mysql_real_escape_string($_POST['kredit']);
-				$memo	= @mysql_real_escape_string($_POST['memo']);
-				$id		= @mysql_real_escape_string($_POST['id']);
-				$old	= @mysql_real_escape_string($_POST['old']);
+				$date		= @mysql_real_escape_string($_POST['date']);
+				$jenis		= @mysql_real_escape_string($_POST['jenis']);
+				$name		= @mysql_real_escape_string($_POST['name']);
+				$kredit		= @mysql_real_escape_string($_POST['kredit']);
+				$memo		= @mysql_real_escape_string($_POST['memo']);
+
+				$id			= @mysql_real_escape_string($_POST['id']);
+				$old		= @mysql_real_escape_string($_POST['old']);
+				$stat_file	= @mysql_real_escape_string($_POST['stat_file']);
+				$name_file	= @mysql_real_escape_string($_POST['name_file']);
+
+				if ($stat_file == 0) {
+					hapus_img($name_file);
+					$name_file = '';
+
+				}
+
+				if (!empty($_FILES['file']['name'])) {
+					hapus_img($name_file);
+					$up = new up;
+					$proses = $up->upload('file', '5', 'jpg|png|gif', '../../../vendor/dist/file/')->resize(200,200)->return_name;
+					if ($proses) {
+						$name_file = $proses;
+					}
+				}
 
 				$did = $sql -> db_Update(
 					"kredit", 
 					"	`date`='{$date}',
 						`name`='{$name}',
 						`kredit`='{$kredit}',
+						`file`='{$name_file}',
 						`memo`='{$memo}' WHERE `kid`='{$id}'	"
 				);
 
@@ -163,13 +187,32 @@
 
 					if ($kredit > $old) {
 						$total = $kredit-$old;
-						$meta = $sql -> db_Update("meta", "`value`=`value`+$total  WHERE `type`=1" );
+						$meta = $sql -> db_Update("meta", "`value`=`value`+$total  WHERE `type`=2" );
 					} elseif ($old > $kredit) {
 						$total = $old - $kredit;
-						$meta = $sql -> db_Update("meta", "`value`=`value`-$total  WHERE `type`=1" );
+						$meta = $sql -> db_Update("meta", "`value`=`value`-$total  WHERE `type`=2" );
 					}
 					
 					echo json_encode(array("stat"=>true,"msg"=>'Success',"did"=>$did));
+				}else{
+					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
+				}
+			break;
+
+			case 'del':
+				$kredit	= @mysql_real_escape_string($_POST['kredit']);
+				$id		= @mysql_real_escape_string($_POST['id']);
+				$file	= @mysql_real_escape_string($_POST['file']);
+
+				if (!empty($file)) {
+					hapus_img($file);
+				}
+
+				$del = $sql->db_Delete('kredit',"kid='$id'");
+				if($del){
+					$meta = $sql -> db_Update("meta", "`value`=`value`-$kredit  WHERE `type`=2" );
+					
+					echo json_encode(array("stat"=>true,"msg"=>'Success'));
 				}else{
 					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
 				}
@@ -213,4 +256,22 @@
 
 		}
 
+	}
+
+	function hapus_img($name_file)
+	{
+		$src = '../../../vendor/dist/file/';
+		$ret = false;
+					
+		if (is_file($src.$name_file) && is_file($src.'syah_'.$name_file)) {
+			
+			if (unlink($src.$name_file) && unlink($src.'syah_'.$name_file)) {
+
+				$ret = true;
+
+			}
+
+		}
+
+		return $ret;
 	}
