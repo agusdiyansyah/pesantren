@@ -69,6 +69,7 @@
 	<script>
 		// $('body').removeClass('sidebar-collapse');
         var debit = '".module."debit/ajax.php';
+        var kredit = '".module."kredit/ajax.php';
 	</script>
     <script src='".module."home/global.js'></script>
     <script src='".module."home/index.js'></script>
