@@ -25,12 +25,14 @@
                     <input type="hidden" name="ac" value="add" class='ac-kredit'>  
                     <input type="hidden" name="id" value="" class='id-kredit'>  
                     <input type="hidden" name="old" value="" class='old-kredit'>  
+                    <input type="hidden" name="name_file" value="" class='file-kredit'>  
+                    <input type="hidden" name="stat_file" value="1" class='file-stat'>  
 
                     <span class="img"></span>
 					
 					<div class="form-group">
             			<label for="">File</label>
-            			<input type="file" class="form-control file" id="" required="required" name='file'>
+            			<input type="file" class="form-control file" id="" name='file'>
             		</div>	
 
                     <label for="">Tanggal</label>
@@ -53,7 +55,7 @@
             			<input type="text" class="form-control name" id="" required="required" name='name'>
             		</div>
             		<div class="form-group">
-            			<label for="">Jumlah Pengeuaran</label>
+            			<label for="">Jumlah Pengeluaran</label>
             			<input type="text" class="form-control kredit" id="" required="required" name='kredit'>
             		</div>
             		<div class="form-group">
