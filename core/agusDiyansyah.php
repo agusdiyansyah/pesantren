@@ -1,4 +1,14 @@
 <?php  
+
+    $uri    = explode('/', $_SERVER['QUERY_STRING']);
+
+    session_start();
+
+    if ($uri[0] != 'login') {
+        if (empty($_SESSION['login'])) {
+            echo "<script>window.location.href = 'login'</script>";
+        }
+    }
     
     date_default_timezone_set("Asia/Jakarta");
 
@@ -7,7 +17,6 @@
     include component.'stat-box.php';
 
 
-    $uri    = explode('/', $_SERVER['QUERY_STRING']);
 ?>
 
 <!DOCTYPE html>
