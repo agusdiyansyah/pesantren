@@ -1,0 +1,5 @@
+RewriteEngine On
+DirectoryIndex core/agusDiyansyah.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ core/agusDiyansyah.php?$1 [L,QSA]
