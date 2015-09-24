@@ -66,7 +66,7 @@
             	<table class="table table-hover table-striped mb-none list-debit">
 					<thead>
 						<tr>
-							<th>No</th>
+							<th>No Transaksi</th>
 							<th>Tanggal</th>
 							<th>Item Pemasukkan Dana</th>
 							<th>Jumlah Pemasukan</th>

@@ -3,6 +3,7 @@
 	include '../../../core/db_class.php';
 	include '../../class/upload.php';
 	include '../../function/duit.php';
+	include '../../function/id.php';
 	include '../../function/tgl-indo.php';
 
 	if($_POST){
@@ -68,6 +69,7 @@
 
 				while( $row = $sql->db_Fetch() ) { 
 
+					$not = id($row['kid'], 6, 'KDT');
 
 					$aksi	= "	<div class=\"actions-hover actions-fade\">
 									<a href='#'
@@ -91,14 +93,14 @@
 										data-kredit = '$row[kredit]'
 										data-file = '$row[file]'
 										data-id = '$row[kid]'
-										data-no = '$no'
+										data-not = '$not'
 
 							        	class='delete-row'
 							        >Delete</a>
 							    </div>";
 
 					$posts 	= array(
-						$no,
+						$not,
 						$row['date'].$aksi,
 						(empty($row['value'])) ? '<span style="color:silver"><i>Uncategories</i></span>' : $row['value'],
 						$row['name'],

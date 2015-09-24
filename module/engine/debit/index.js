@@ -133,7 +133,7 @@ $(document).ready(function() {
 		var debit = $(this).data('debit');
 		var memo = $(this).data('memo');
 		var id = $(this).data('id');
-		var no = $(this).data('no');
+		var no = $(this).data('not');
 
 		$('.modal-body').load(module+'debit/modal.php', function () {
 

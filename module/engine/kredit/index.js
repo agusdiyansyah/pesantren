@@ -167,7 +167,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		$('.ok-modal').css('display', 'inline-block');
 
-		var no 		= $(this).data('no');
+		var no 		= $(this).data('not');
 		var date 	= $(this).data('date');
 		var jenis 	= $(this).data('jenis');
 		var name 	= $(this).data('name');

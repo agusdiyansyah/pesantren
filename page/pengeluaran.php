@@ -96,7 +96,7 @@
 				<table class="table table-hover table-striped mb-none list-kredit">
 					<thead>
 						<tr>
-							<th>No</th>
+							<th>No Transaksi</th>
 							<th>Tanggal</th>
 							<th>Jenis Pengeluaran</th>
 							<th>Item Pengeluaran Dana</th>

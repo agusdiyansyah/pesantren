@@ -2,6 +2,7 @@
 	
 	include '../../../core/db_class.php';
 	include '../../function/duit.php';
+	include '../../function/id.php';
 	include '../../function/tgl-indo.php';
 
 	if($_POST){
@@ -65,6 +66,7 @@
 
 				while( $row = $sql->db_Fetch() ) { 
 
+					$not = id($row['did'], 6, 'DBT');
 
 					$aksi	= "	<div class=\"actions-hover actions-fade\">
 									<a href='#'
@@ -84,14 +86,14 @@
 										data-memo = '$row[memo]'
 										data-debit = '$row[debit]'
 										data-id = '$row[did]'
-										data-no = '$no'
+										data-not = '$not'
 
 							        	class='delete-row'
 							        >Delete</a>
 							    </div>";
 
 					$posts 	= array(
-						$no,
+						$not,
 						$row['date'].$aksi,
 						$row['name'],
 						'Rp.'.duit($row['debit']),
