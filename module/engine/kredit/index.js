@@ -3,6 +3,13 @@ $(document).ready(function() {
 	getJenis();
 	total('.total-kredit', engine);
 
+	$("#form_cari").submit(function(e) {
+		e.preventDefault();
+
+		var dtable = $(".list-kredit").DataTable();
+		dtable.draw();
+	});
+
 	$(".list-kredit").DataTable({
 		"ajax": {
 	    	"url": engine,
@@ -34,9 +41,6 @@ $(document).ready(function() {
 			date:{
 				required:true
 			},
-			jenis:{
-				required:true
-			},
 			time:{
 				required:true
 			},
@@ -54,9 +58,6 @@ $(document).ready(function() {
 			},
 			date:{
 				required: 'Tanggal tidak boleh kosong'
-			},
-			jenis:{
-				required: 'Jenis pengeluaran tidak boleh kosong'
 			},
 			time:{
 				required: 'Waktu tidak boleh kosong'
@@ -237,6 +238,108 @@ $(document).ready(function() {
 		});
 	});
 
+	$('.add-jenis').click(function(event) {
+		event.preventDefault();
+		$('.modal-title').html('Tambah Jenis Pengeluaran');
+
+		$('.modal-body').load(module+'kredit/modal.php', function () {
+
+			getItemTable();
+
+			$('.form-jenis').validate({
+				ignore: [],
+			
+				errorClass: "error",
+				rules:{
+					new:{
+						required:true
+					}
+				},
+				message:{
+					new:{
+						required:'Jenis tidak boleh kosong'
+					}
+				},
+				errorPlacement: function (error, element) {
+			        //error.appendTo( element.parent("div"));
+			        error.insertAfter(element);
+			    },
+			    highlight: function (element, validClass) {
+			        $(element).parent().addClass('has-error');
+			    },
+			    unhighlight: function (element, validClass) {
+			        $(element).parent().removeClass('has-error');
+			    },
+				submitHandler: function(form) {
+					$.ajax({
+						url: engine,
+						type: 'post',
+						dataType: 'json',
+						data: $('.form-jenis').serialize(),
+						success: function (json) {
+							if (json.stat) {
+								getItemTable();
+								getJenis();
+								$('.jenis-baru').val('');
+							};
+						}
+					});
+					
+				}
+			});
+
+			$('.jenis-item').on('click', '.del-jenis', function(event) {
+				event.preventDefault();
+
+				$('.btn-x').remove();
+				$('.jenis-baru').val('');
+				$('.ac-jenis').val('jenis');
+				$('.id-jenis').val('');
+
+				var id = $(this).data('id');
+				var dtable = $(".list-kredit").DataTable();
+				$.ajax({
+					url: engine,
+					type: 'post',
+					dataType: 'json',
+					data: {ac: 'del_jenis', id: id},
+					success: function (json) {
+						if (json.stat) {
+							// $('.item-'+id).remove();
+							getItemTable();
+							dtable.draw();
+						};
+					}
+				}).always(function() {
+					getJenis();
+				});	
+			});
+
+			$('.jenis-item').on('click', '.edit-jenis', function(event) {
+				event.preventDefault();
+				var jenis = $(this).data('jenis');
+				var id = $(this).data('id');
+				$('.btn-x').remove();
+				$('.btn-jenis').prepend('<button type="button" class="btn btn-danger btn-x"><i class="fa fa-times"></i></button>');
+				$('.jenis-baru').val(jenis);
+				$('.ac-jenis').val('up_jenis');
+				$('.id-jenis').val(id);
+			});
+
+			$('.btn-jenis').on('click', '.btn-x', function(event) {
+				event.preventDefault();
+				$(this).remove();
+				$('.jenis-baru').val('');
+				$('.ac-jenis').val('jenis');
+				$('.id-jenis').val('');
+			});
+			
+		});
+
+
+		$('.ok-modal').css('display', 'none');
+	});
+
 
 
 	$('.date').datetimepicker({pickTime:false});
@@ -254,6 +357,24 @@ function getJenis () {
 		};
 	});
 }
+
+function getItemTable () {
+	$.getJSON(engine, {ac: 'jenis'}, function(json) {
+		var item;
+		$.each(json.item, function(index, data) {
+			item += '<tr class="item-'+data.id+'">'+
+				'<td>'+data.value+'</td>'+
+				'<td>'+
+					'<a href="#" class="edit-jenis" data-id="'+data.id+'" data-jenis="'+data.value+'">Edit</a> &nbsp'+
+					'<a href="#" class="del-jenis" data-id="'+data.id+'" data-jenis="'+data.value+'">Hapus</a>'+
+				'</td>'
+			+'</tr>';
+		});
+
+		$('.jenis-item').html(item);
+	});
+}
+
 
 function bersih () {
 	$('.ac-kredit').val('add');

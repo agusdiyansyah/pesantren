@@ -45,10 +45,10 @@
                     <br>
             		<div class="form-group">
             			<label for="">Jenis Pengeluaran</label>
-            			<select name="jenis" id="inputJenis" class="form-control" required="required">
+            			<select name="jenis" id="inputJenis" class="form-control">
             				<option value=""></option>
             			</select>
-            			<small><a href="">Tambah jenis baru</a></small>
+            			<small><a href="" data-toggle='modal' data-target='#myModal' class='add-jenis'>Tambah jenis baru</a></small>
             		</div>
             		<div class="form-group">
             			<label for="">Item Pengeluaran Dana</label>

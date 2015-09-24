@@ -70,6 +70,8 @@
 		// $('body').removeClass('sidebar-collapse');
         var debit = '".module."debit/ajax.php';
         var kredit = '".module."kredit/ajax.php';
+        var saldo = '".module."home/ajax.php';
+        var module = '".module."';
 	</script>
     <script src='".module."home/global.js'></script>
     <script src='".module."home/index.js'></script>

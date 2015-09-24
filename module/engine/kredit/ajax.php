@@ -82,8 +82,7 @@
 										class='edit-kredit'
 									>Edit</a>&nbsp
 							        <a href='#' 
-							        	data-toggle='modal' 
-							        	data-target='#myModal'
+							        	data-toggle='modal' data-target='#myModal'
 
 							        	data-date = '$row[date]'
 							        	data-jenis = '$row[value]'
@@ -101,7 +100,7 @@
 					$posts 	= array(
 						$no,
 						$row['date'].$aksi,
-						$row['value'],
+						(empty($row['value'])) ? '<span style="color:silver"><i>Uncategories</i></span>' : $row['value'],
 						$row['name'],
 						'Rp.'.duit($row['kredit']),
 						$row['memo'],
@@ -132,7 +131,7 @@
 
 				$data = array(
 					"date" 		=> $date,
-					"jenis" 	=> $jenis,
+					"jenis" 	=> (empty($jenis)) ? 0 : $jenis,
 					"name" 		=> $name,
 					"kredit" 	=> $kredit,
 					"memo" 		=> (empty($memo)) ? '-' : $memo,
@@ -174,10 +173,13 @@
 					}
 				}
 
+				$jenis = (empty($jenis)) ? 0 : $jenis ;
+
 				$did = $sql -> db_Update(
 					"kredit", 
 					"	`date`='{$date}',
 						`name`='{$name}',
+						`jenis`='{$jenis}',
 						`kredit`='{$kredit}',
 						`file`='{$name_file}',
 						`memo`='{$memo}' WHERE `kid`='{$id}'	"
@@ -218,6 +220,47 @@
 				}
 			break;
 
+			case 'jenis':
+				$jenis	= @mysql_real_escape_string($_POST['new']);
+				$data = array(
+					"type" => 3,
+					"key" => "taxJenis",
+					"value" => $jenis			
+				);
+				$id = $sql -> db_Insert("meta", $data);
+				if($id){
+					echo json_encode(array("stat"=>true,"msg"=>'Success',"id"=>$id, 'jenis' => $jenis));
+				}else{
+					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
+				}
+			break;
+
+			case 'up_jenis':
+				$jenis	= @mysql_real_escape_string($_POST['new']);
+				$id	= @mysql_real_escape_string($_POST['id']);
+				
+				$id = $sql -> db_Update('meta', '`value`="'.$jenis.'" where type=3 and lid='.$id);
+				if($id){
+					echo json_encode(array("stat"=>true,"msg"=>'Success',"id"=>$id, 'jenis' => $jenis));
+				}else{
+					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
+				}
+			break;
+
+			case 'del_jenis':
+				$id	= @mysql_real_escape_string($_POST['id']);
+				$del = $sql->db_Delete('meta',"lid='$id'");
+				$sql->db_Update(
+					'kredit',
+					'jenis = 0 where jenis = '.$id
+				);
+				if($del){				
+					echo json_encode(array("stat"=>true,"msg"=>'Success'));
+				}else{
+					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
+				}
+			break;
+
 		}
 
 	}
@@ -228,7 +271,7 @@
 			case 'jenis':
 				$sql->db_Select('meta',
 					'lid, value', 
-					'where type=3');
+					'where type=3 order by lid desc');
 				$jenis = array();
 				while ($data = $sql->db_Fetch()) {
 					$res = array(

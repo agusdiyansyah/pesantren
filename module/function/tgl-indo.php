@@ -1,4 +1,14 @@
 <?php  
+    /**
+    * @package      Dyn 5.0
+    * @version      Dev : 5.0
+    * @author       agus Diyansyah
+    * @license      http://creativecommons.org/licenses/by-nc/3.0/ CC BY-NC 3.0
+    * @copyright    2015
+    * @since        File available since 5.0
+    * @category     tgl-indo.php
+    */
+    
     function tanggalIndo($waktu, $format) { //{tanggalIndoTiga tgl=0000-00-00 00:00:00 format="l, d/m/Y H:i:s"}
         if($waktu == "0000-00-00" || !$waktu || $waktu == "0000-00-00 00:00:00") {
             $rep = "";
@@ -28,4 +38,7 @@
         }
         return $rep;
     }
+
+    /* End of file tgl-indo.php */
+    /* Location: .//D/backup/WempServer/www/pesantren/module/function/tgl-indo.php */
 ?>

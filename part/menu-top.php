@@ -12,7 +12,7 @@
         <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
               <li>
-                <a href="login"><i class="fa fa-power-off"></i></a>
+                <a href="#" class='off'><i class="fa fa-power-off"></i></a>
               </li>
             </ul>
         </div>
