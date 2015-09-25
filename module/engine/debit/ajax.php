@@ -10,14 +10,14 @@
 
 			case 'list':
 				$conf = array(
-					'id'		=> ' did ',
-					'column' 	=> array('`name`', 'date', 'debit', 'memo'),
-					'table' 	=> "debit",
-					'select' 	=> " did, date, `name`, debit, memo ",
+					'id'		=> ' id ',
+					'column' 	=> array('`name`', 'date', 'jml', 'memo'),
+					'table' 	=> "transaksi",
+					'select' 	=> " id, date, `name`, jml, memo ",
 					'limit'		=> " ",
-					'order'		=> " order by did desc ",
-					'where'		=> " ",
-					'filter'	=> " ",
+					'order'		=> " order by id desc ",
+					'where'		=> " where type=1 ",
+					'filter'	=> "  ",
 				);
 				extract($conf);
 
@@ -28,7 +28,7 @@
 				// if ( isset($_POST['cari']) && $_POST['cari']!= '' ) {
 				if ( !empty($_POST['cari']) ) {
 					$str	= $_POST['cari'];
-					$filter = " where (";
+					$filter = " AND (";
 				    for ( $i = 0, $ien = count($column) ; $i < $ien ; $i++ ) {
 				        $filter .= "".$column[$i]." LIKE '%".$str."%' OR ";
 				    }
@@ -66,15 +66,15 @@
 
 				while( $row = $sql->db_Fetch() ) { 
 
-					$not = id($row['did'], 6, 'DBT');
+					$not = id($row['id'], 6, 'DBT');
 
 					$aksi	= "	<div class=\"actions-hover actions-fade\">
 									<a href='#'
 										data-date = '$row[date]'
 										data-name = '$row[name]'
 										data-memo = '$row[memo]'
-										data-debit = '$row[debit]'
-										data-id = '$row[did]'
+										data-debit = '$row[jml]'
+										data-id = '$row[id]'
 										class='edit-debit'
 									>Edit</a>&nbsp
 							        <a href='#' 
@@ -84,8 +84,8 @@
 							        	data-date = '$row[date]'
 										data-name = '$row[name]'
 										data-memo = '$row[memo]'
-										data-debit = '$row[debit]'
-										data-id = '$row[did]'
+										data-debit = '$row[jml]'
+										data-id = '$row[id]'
 										data-not = '$not'
 
 							        	class='delete-row'
@@ -96,7 +96,7 @@
 						$not,
 						$row['date'].$aksi,
 						$row['name'],
-						'Rp.'.duit($row['debit']),
+						'Rp.'.duit($row['jml']),
 						$row['memo'],
 					);
 					$output['data'][] = $posts;
@@ -114,12 +114,13 @@
 				$memo	= @mysql_real_escape_string($_POST['memo']);
 
 				$data = array(
+					"type" => 1,
 					"date" => $date,
 					"name" => $name,
-					"debit" => $debit,
+					"jml" => $debit,
 					"memo" => (empty($memo)) ? '-' : $memo,
 				);
-				$did = $sql -> db_Insert("debit", $data);
+				$did = $sql -> db_Insert("transaksi", $data);
 				if($did){
 					$meta = $sql -> db_Update("meta", "`value`=`value`+$debit  WHERE `type`=1" );
 					echo json_encode(array("stat"=>true,"msg"=>'Success',"did"=>$did));
@@ -137,11 +138,11 @@
 				$id		= @mysql_real_escape_string($_POST['id']);
 
 				$did = $sql -> db_Update(
-					"debit", 
+					"transaksi", 
 					"	`date`='{$date}',
 						`name`='{$name}',
-						`debit`='{$debit}',
-						`memo`='{$memo}' WHERE `did`='{$id}'	"
+						`jml`='{$debit}',
+						`memo`='{$memo}' WHERE `id`='{$id}'	AND type=1"
 				);
 
 				if($did){
@@ -164,7 +165,7 @@
 				$debit	= @mysql_real_escape_string($_POST['debit']);
 				$id		= @mysql_real_escape_string($_POST['id']);
 
-				$del = $sql->db_Delete('debit',"did='$id'");
+				$del = $sql->db_Delete('transaksi',"id='$id'");
 				if($del){
 					$meta = $sql -> db_Update("meta", "`value`=`value`-$debit  WHERE `type`=1" );
 					

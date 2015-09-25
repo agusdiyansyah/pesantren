@@ -188,7 +188,9 @@ $(document).ready(function() {
 	});
 
 
-	$('.date').datetimepicker({pickTime:false});
+	$('.date').datetimepicker({
+        format: 'YYYY-M-D',
+    });
 
 });
 
