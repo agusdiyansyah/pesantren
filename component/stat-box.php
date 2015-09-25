@@ -2,7 +2,7 @@
     /**
     * STATUS BOX
     */
-   function statbox($value = 150, $title = 'new order', $link = '#' , $icon = 'bag', $color = 'aqua', $id = '')
+   function statbox($value = 150, $title = 'new order', $link = '#' , $link_name = 'More info',$icon = 'bag', $color = 'aqua', $id = '')
    {
         echo '
         <div class="small-box bg-'.$color.' '.$id.'">
@@ -13,7 +13,7 @@
             <div class="icon">
                 <i class="ion ion-'.$icon.'"></i>
             </div>
-            <a href="'.$link.'" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+            <a href="'.$link.'" class="small-box-footer">'.$link_name.' <i class="fa fa-arrow-circle-right"></i></a>
         </div>
         ';
    }
