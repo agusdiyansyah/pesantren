@@ -14,6 +14,7 @@
     <link href="<?php echo vendor ?>plugins/morris/morris.css" rel="stylesheet" type="text/css" />
     <link href="<?php echo vendor ?>plugins/jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
     <link href="<?php echo vendor ?>plugins/datepicker/datepicker3.css" rel="stylesheet" type="text/css" />
+    <link href="<?php echo vendor ?>plugins/datetimepicker/bootstrap.datetimepicker.css" rel="stylesheet" type="text/css" />
     <link href="<?php echo vendor ?>plugins/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
     <link href="<?php echo vendor ?>plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
     
