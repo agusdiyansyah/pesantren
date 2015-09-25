@@ -11,15 +11,15 @@
 
 			case 'list':
 				$conf = array(
-					'id'		=> ' kid ',
-					'column' 	=> array('`name`', 'date', 'kredit', 'memo', 'file', 'value'),
-					'table' 	=> "kredit
-										left join meta on (meta.lid = kredit.jenis and type=3)
+					'id'		=> ' id ',
+					'column' 	=> array('`name`', 'date', 'jml', 'memo', 'value'),
+					'table' 	=> "transaksi t
+										left join meta on (meta.lid = t.jenis and meta.type=3)
 									",
-					'select' 	=> " kid, date, `name`, kredit, memo, file, value, lid ",
+					'select' 	=> " id, date, `name`, jml, memo, value, lid ",
 					'limit'		=> " ",
-					'order'		=> " order by kid desc ",
-					'where'		=> " ",
+					'order'		=> " order by id desc ",
+					'where'		=> " where t.type=2 ",
 					'filter'	=> " ",
 				);
 				extract($conf);
@@ -31,7 +31,7 @@
 				// if ( isset($_POST['cari']) && $_POST['cari']!= '' ) {
 				if ( !empty($_POST['cari']) ) {
 					$str	= $_POST['cari'];
-					$filter = " where (";
+					$filter = " AND (";
 				    for ( $i = 0, $ien = count($column) ; $i < $ien ; $i++ ) {
 				        $filter .= "".$column[$i]." LIKE '%".$str."%' OR ";
 				    }
@@ -69,7 +69,8 @@
 
 				while( $row = $sql->db_Fetch() ) { 
 
-					$not = id($row['kid'], 6, 'KDT');
+					$not = id($row['id'], 6, 'KDT');
+					$json = json_decode($row['memo']);
 
 					$aksi	= "	<div class=\"actions-hover actions-fade\">
 									<a href='#'
@@ -77,10 +78,10 @@
 										data-jenis = '$row[value]'
 										data-meta = '$row[lid]'
 										data-name = '$row[name]'
-										data-memo = '$row[memo]'
-										data-file = '$row[file]'
-										data-kredit = '$row[kredit]'
-										data-id = '$row[kid]'
+										data-memo = '".$json->memo."'
+										data-file = '".$json->file."'
+										data-kredit = '$row[jml]'
+										data-id = '$row[id]'
 										class='edit-kredit'
 									>Edit</a>&nbsp
 							        <a href='#' 
@@ -89,10 +90,10 @@
 							        	data-date = '$row[date]'
 							        	data-jenis = '$row[value]'
 										data-name = '$row[name]'
-										data-memo = '$row[memo]'
-										data-kredit = '$row[kredit]'
-										data-file = '$row[file]'
-										data-id = '$row[kid]'
+										data-memo = '".$json->memo."'
+										data-file = '".$json->file."'
+										data-kredit = '$row[jml]'
+										data-id = '$row[id]'
 										data-not = '$not'
 
 							        	class='delete-row'
@@ -104,8 +105,8 @@
 						$row['date'].$aksi,
 						(empty($row['value'])) ? '<span style="color:silver"><i>Uncategories</i></span>' : $row['value'],
 						$row['name'],
-						'Rp.'.duit($row['kredit']),
-						$row['memo'],
+						'Rp.'.duit($row['jml']),
+						$json->memo,
 					);
 					$output['data'][] = $posts;
 					$no++;
@@ -131,18 +132,20 @@
 					}
 				}
 
+				$mmo = array('file' => $file, 'memo' => (empty($memo)) ? '-' : $memo);
+
 				$data = array(
+					"type" 		=> 2,
 					"date" 		=> $date,
 					"jenis" 	=> (empty($jenis)) ? 0 : $jenis,
 					"name" 		=> $name,
-					"kredit" 	=> $kredit,
-					"memo" 		=> (empty($memo)) ? '-' : $memo,
-					"file" 		=> $file,					
+					"jml" 	=> $kredit,
+					"memo" 		=> json_encode($mmo),				
 				);
-				$kid = $sql -> db_Insert("kredit", $data);
-				if($kid){
+				$id = $sql -> db_Insert("transaksi", $data);
+				if($id){
 					$meta = $sql -> db_Update("meta", "`value`=`value`+$kredit  WHERE `type`=2" );
-					echo json_encode(array("stat"=>true,"msg"=>'Success',"kid"=>$kid));
+					echo json_encode(array("stat"=>true,"msg"=>'Success',"id"=>$id));
 				}else{
 					echo json_encode(array("stat"=>false,"msg"=>"Aksi Gagal."));
 				}
@@ -177,14 +180,15 @@
 
 				$jenis = (empty($jenis)) ? 0 : $jenis ;
 
+				$mmo = array('file' =>  $name_file, 'memo' => $memo);
+
 				$did = $sql -> db_Update(
-					"kredit", 
+					"transaksi", 
 					"	`date`='{$date}',
 						`name`='{$name}',
 						`jenis`='{$jenis}',
-						`kredit`='{$kredit}',
-						`file`='{$name_file}',
-						`memo`='{$memo}' WHERE `kid`='{$id}'	"
+						`jml`='{$kredit}',
+						`memo`='".json_encode($mmo)."' WHERE id='{$id}' AND type=2"
 				);
 
 				if($did){
@@ -212,7 +216,7 @@
 					hapus_img($file);
 				}
 
-				$del = $sql->db_Delete('kredit',"kid='$id'");
+				$del = $sql->db_Delete('transaksi',"id='$id'");
 				if($del){
 					$meta = $sql -> db_Update("meta", "`value`=`value`-$kredit  WHERE `type`=2" );
 					
