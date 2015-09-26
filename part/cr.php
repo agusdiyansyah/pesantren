@@ -4,7 +4,7 @@
 	</div>
 	<strong>
 		Copyright &copy; 2015 
-		<a href="http://almsaeedstudio.com">
+		<a href="http://www.indobit.com">
 			agus Diyansyah
 		</a>.
 	</strong> All rights reserved. 
