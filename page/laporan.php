@@ -58,6 +58,7 @@
     </ul>
 
     <input type="hidden" name="type" value="" class='type'>
+    <input type="hidden" name="tampil" value="list" class='tampil'>
 
     <div class="box-body">
     	
