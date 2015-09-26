@@ -10,14 +10,22 @@
 
 			case 'load':
 				$src = @mysql_real_escape_string($_GET['src']);
+				$type = @mysql_real_escape_string($_GET['type']);
+
 				$list['periode'] = tanggalIndo($src.'01', 'F Y');
 				$src = explode('-', $src);
 				$m = $src[1];
 				$y = $src[0];
+
+				$filter = ' ';
+				if (!empty($type)) {
+					$filter = ' and type='.$type.' ';
+				}
+
 				$sql->db_Select(
 					'transaksi',
 					'id, type, date, `name`, jml, memo',
-					'where DATE_FORMAT(date, "%Y") = '.$y.' and DATE_FORMAT(date, "%m") ='.$m.' order by date asc'
+					'where DATE_FORMAT(date, "%Y") = '.$y.' and DATE_FORMAT(date, "%m") ='.$m.$filter.' order by date asc'
 				);
 				$d = 0;
 				$k = 0;
@@ -64,20 +72,12 @@
 				echo json_encode($list);
 			break;
 
-			case 'cetak':
-				include '../../class/mpdf/mpdf.php';
-				$pdf = new mPDF('utf-8', 'A4', 0, '', 10, 10, 5, 1, 1, 1, '');
-				$css = '<link href="'.$_GET['vendor'].'dist/css/jadwal_cetak.css" rel="stylesheet" type="text/css" />';
-				$header = "<br><br><div class='header'>HEADER</div><br>";
-				$pdf->WriteHTML($css.$header.$_GET['data']);
-				$pdf->Output();
-			break;
-
 			case 'img':
 				$src = @mysql_real_escape_string($_GET['src']);
 				$src = explode('-', $src);
 				$m = $src[1];
 				$y = $src[0];
+
 				$sql->db_Select(
 					'transaksi',
 					'memo',
@@ -92,6 +92,15 @@
 				}
 				header('content-type: application/json');
 				echo json_encode($hasil);
+			break;
+
+			case 'cetak':
+				include '../../class/mpdf/mpdf.php';
+				$pdf = new mPDF('utf-8', 'A4', 0, '', 10, 10, 5, 1, 1, 1, '');
+				$css = '<link href="'.$_GET['vendor'].'dist/css/jadwal_cetak.css" rel="stylesheet" type="text/css" />';
+				$header = "<br><br><div class='header'>HEADER</div><br>";
+				$pdf->WriteHTML($css.$header.$_GET['data']);
+				$pdf->Output();
 			break;
 
 		}
