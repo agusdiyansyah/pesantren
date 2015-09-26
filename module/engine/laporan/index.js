@@ -5,6 +5,7 @@ $(document).ready(function() {
 	$('.load-list').click(function(event) {
 		event.preventDefault();
 		var type 	= $('.type').val();
+		$('.tampil').val('list');
 		render(date, '.box-body', type);
 	});
 
@@ -16,10 +17,11 @@ $(document).ready(function() {
 
 	$('.form-date').submit(function(event) {
 		event.preventDefault();
-		var tampil = $('.tampil').val();
+		var tampil 	= $('.tampil').val();
+		var type 	= $('.type').val();
 		if (tampil == 'list') {
-			render($('.date').val(), '.box-body');			
-		} else{
+			render($('.date').val(), '.box-body', type);			
+		} else if(tampil == 'img'){
 			render_img_all($('.date').val());
 		};
 	});
