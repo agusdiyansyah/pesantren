@@ -31,13 +31,13 @@
             <div class="form-group" style="display:inline-block; width:280px;margin-bottom: 0px;margin-right: 5px;">
                 <div class='input-group'>
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default btn-all">
+                        <button type="button" class="btn-transaksi btn btn-default btn-all bg-teal">
                             <i class="ion ion-social-usd-outline"></i> &nbspSemua transaksi
                         </button>
-                        <button type="submit" class="btn btn-default btn-debit">
+                        <button type="submit" class="btn-transaksi btn btn-default btn-debit">
                             <i class="ion ion-ios-download-outline"></i> &nbspDebit
                         </button>
-                        <button type="submit" class="btn btn-default btn-kredit">
+                        <button type="submit" class="btn-transaksi btn btn-default btn-kredit">
                             <i class="ion ion-ios-upload-outline"></i> &nbspKredit
                         </button>
                     </span>
@@ -52,6 +52,9 @@
                         <button type="button" class="btn btn-default load-list"><i class="ion ion-ios-list-outline"></i></button>
                         <button type="submit" class="btn btn-default load-img"><i class="ion ion-image"></i></button>
                     </span>
+                    <select name="sel_type" id="inputSel_type" class="form-control sel-type" required="required">
+                        <option value=""></option>
+                    </select>
                 </div>
             </div>
         </li>
@@ -69,7 +72,7 @@
 	$js = "
 	<script>
 		// $('body').removeClass('sidebar-collapse');
-        var engine   = '".module."laporan/ajax.php';
+        var engine  = '".module."laporan/ajax.php';
         var module  = '".module."';
         var vendor  = '".vendor."';
         var date    = '".$now."';
