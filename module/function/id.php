@@ -9,19 +9,14 @@
 	* @category     id.php
 	*/
 	
-	function id($number, $length, $prefix)
+	function id($data, $len = 5, $prefix = '')
 	{
-		if (empty($length)) {
-			$length = 5;
+		$y = $len - strlen($data);
+		$x = "";
+		while(strlen($x) < $y) {
+			$x .= "0";
 		}
-		$zero = '';
-		for ($i=0; $i < $length; $i++) { 
-			$zero .= '0';
-		}
-		$num_len = strlen($number);
-		$num = substr($zero, -($length-$num_len));
-		$num = $num.$number;
-		return $prefix.$num;
+		return $prefix . $x . $data;
 	}
 	
 	/* End of file id.php */
