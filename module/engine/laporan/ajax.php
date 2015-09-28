@@ -11,6 +11,7 @@
 			case 'load':
 				$src = @mysql_real_escape_string($_GET['src']);
 				$type = @mysql_real_escape_string($_GET['type']);
+				$jenis = @mysql_real_escape_string($_GET['jenis']);
 
 				$list['periode'] = tanggalIndo($src.'01', 'F Y');
 				$src = explode('-', $src);
@@ -18,13 +19,20 @@
 				$y = $src[0];
 
 				$filter = ' ';
+				$join   = ' ';
 				if (!empty($type)) {
 					$filter = ' and type='.$type.' ';
+					$ikut = ' '; 
+					if (!empty($jenis)) {
+						$filter .= ' and jenis='.$jenis.' ';
+						// $ikut    = ' and lid ='.$src.' ';
+					}
+					$join   = ' left join meta on( jenis = lid '.$ikut.' ) ';
 				}
 
 				$sql->db_Select(
-					'transaksi',
-					'id, type, date, `name`, jml, memo',
+					'transaksi '.$join,
+					'id, type, date, `name`, jml, memo, jenis',
 					'where DATE_FORMAT(date, "%Y") = '.$y.' and DATE_FORMAT(date, "%m") ='.$m.$filter.' order by date asc'
 				);
 				$d = 0;
@@ -54,6 +62,7 @@
 						'id' => id($data['id'], 6, $prefix),
 						'date' => tanggalIndo($data['date'], 'd F Y'),
 						'name' => $data['name'],
+						'jenis' => $data['jenis'],
 						'd' => ($debit == 0) ? '' : 'Rp.'.duit($debit),
 						'k' => ($kredit == 0) ? '' : 'Rp.'.duit($kredit),
 						's' => 'Rp.'.duit($s)
@@ -101,6 +110,24 @@
 				$header = "<br><br><div class='header'>HEADER</div><br>";
 				$pdf->WriteHTML($css.$header.$_GET['data']);
 				$pdf->Output();
+			break;
+
+			case 'jenis':
+				$sql->db_Select(
+					'meta',
+					'value, lid id',
+					'where type = 3'
+				);
+				$meta = array();
+				while ($data = $sql->db_Fetch()) {
+					$res = array(
+						'id'  => $data['id'],
+						'val' => $data['value'],
+					);
+					array_push($meta, $res);
+				}
+				header('content-type: application/json');
+				echo json_encode($meta);
 			break;
 
 		}
