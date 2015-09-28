@@ -2,6 +2,8 @@ $(document).ready(function() {
 	var type 	= $('.type').val();
 	var lap    	= render(date, '.box-body', type);
 
+	$('.sel-type').css('display', 'none');
+
 	$('.load-list').click(function(event) {
 		event.preventDefault();
 		var type 	= $('.type').val();
@@ -41,23 +43,39 @@ $(document).ready(function() {
 
     $('.btn-all').click(function(event) {
     	event.preventDefault();
+    	$('.btn-transaksi').removeClass('bg-teal');
+		$(this).addClass('bg-teal');
     	$('.type').val('');
     	$('.load-img').css('display', 'inline-block');
+    	$('.sel-type').css('display', 'none');
     	render(date, '.box-body');
     });
 
     $('.btn-debit').click(function(event) {
     	event.preventDefault();
+    	$('.btn-transaksi').removeClass('bg-teal');
+		$(this).addClass('bg-teal');
     	$('.type').val(1);
     	$('.load-img').css('display', 'none');
+    	$('.sel-type').css('display', 'none');
     	render(date, '.box-body', 1);
     });
 
     $('.btn-kredit').click(function(event) {
     	event.preventDefault();
+    	$('.btn-transaksi').removeClass('bg-teal');
+		$(this).addClass('bg-teal');
+    	render_jenis('.sel-type');
     	$('.type').val(2);
     	$('.load-img').css('display', 'inline-block');
+    	$('.sel-type').css('display', 'inline-block');
     	render(date, '.box-body', 2);
+    });
+
+    $('.sel-type').change(function(e) {
+    	e.preventDefault();
+    	var val = $(this).val();
+    	alert(val);
     });
 });
 
@@ -70,5 +88,15 @@ function render_img_all (tgl, type) {
 			'';
 		});
 		$('.box-body').html(tag);
+	});
+}
+
+function render_jenis (tag) {
+	$.getJSON(engine, {ac: 'jenis'}, function(json) {
+		var html = '<option value=""></option>';
+		$.each(json, function(index, data) {
+			html += '<option value="'+data.id+'">'+data.val+'</option>';
+		});
+		$(tag).html(html);
 	});
 }

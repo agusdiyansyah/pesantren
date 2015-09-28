@@ -1,5 +1,5 @@
-function render (tgl, id, type) {
-	$.getJSON(engine, {ac: 'load', src: tgl, type: type}, function(json) {
+function render (tgl, id, type, src) {
+	$.getJSON(engine, {ac: 'load', src: tgl, type: type, jenis: src}, function(json) {
         var th;
         var td;
         if (type==1) {
@@ -52,14 +52,25 @@ function render (tgl, id, type) {
                 '</table>'+
             '';
         } else if(type==2){
-            tag+=''+
-                        '<tr>'+
-                            '<td colspan="3"><b>Total Kredit</b></td>'+
-                            '<td><b>'+json.kredit+'</b></td>'+
-                        '</tr>'+
-                    '</tbody>'+
-                '</table>'+
-            '';
+            if (src != '') {
+                tag+=''+
+                            '<tr>'+
+                                '<td colspan="3"><b>Total Kredit</b></td>'+
+                                '<td><b>'+json.kredit+'</b></td>'+
+                            '</tr>'+
+                        '</tbody>'+
+                    '</table>'+
+                '';
+            } else{
+                tag+=''+
+                            '<tr>'+
+                                '<td colspan="3"><b>Total Kredit</b></td>'+
+                                '<td><b>'+json.kredit+'</b></td>'+
+                            '</tr>'+
+                        '</tbody>'+
+                    '</table>'+
+                '';
+            };
         } else{
     		tag+=''+
     			'<tr>'+
