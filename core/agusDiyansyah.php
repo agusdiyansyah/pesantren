@@ -22,7 +22,7 @@
 <!DOCTYPE html>
 <html>
     <?php include part.'head.php'; ?>
-    <body class="skin-black-light sidebar-mini sidebar-collapse">
+    <body class="sidebar-mini sidebar-collapse skin-green">
         <div class="wrapper">
         
             <?php 
