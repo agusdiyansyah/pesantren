@@ -15,24 +15,24 @@
 
 				$list['periode'] = tanggalIndo($src.'01', 'F Y');
 				$src = explode('-', $src);
-				$m = $src[1];
-				$y = $src[0];
+				$m = $src[0];
+				$y = $src[1];
 
 				$filter = ' ';
 				$join   = ' ';
+				$ikut = ' '; 
 				if (!empty($type)) {
-					$filter = ' and type='.$type.' ';
-					$ikut = ' '; 
+					$filter = ' and transaksi.type='.$type.' ';
 					if (!empty($jenis)) {
 						$filter .= ' and jenis='.$jenis.' ';
 						// $ikut    = ' and lid ='.$src.' ';
 					}
-					$join   = ' left join meta on( jenis = lid '.$ikut.' ) ';
 				}
+				$join   = ' left join meta on( jenis = lid '.$ikut.' ) ';
 
 				$sql->db_Select(
 					'transaksi '.$join,
-					'id, type, date, `name`, jml, memo, jenis',
+					'id, transaksi.type, date, `name`, jml, memo, jenis, value',
 					'where DATE_FORMAT(date, "%Y") = '.$y.' and DATE_FORMAT(date, "%m") ='.$m.$filter.' order by date asc'
 				);
 				$d = 0;
@@ -68,14 +68,35 @@
 						's' => 'Rp.'.duit($s)
 
 					);
+
+					if ($type == 2) {
+						$a['jenis_val'] = $data['value'];
+						$list['jenis'] = $data['value'];
+					}
 					
 					array_push($item, $a);
 
 				}
 
+				if (!empty($jenis)) {
+					$sql->db_Select(
+						'meta',
+						'value',
+						'where type = 1 or type = 2'
+					);
+					$total = array();
+					while ($data = $sql->db_Fetch()) {
+						array_push($total, $data['value']);
+					}
+					$list['d_tot'] = "Rp".duit($total[0]);
+					$list['k_tot'] = "Rp".duit($total[1]);
+					$list['saldo'] = 'Rp.'.duit($total[0]-$k);
+				} else {
+					$list['saldo'] = 'Rp.'.duit($s);
+				}
+
 				$list['debit'] = 'Rp.'.duit($d);
 				$list['kredit'] = 'Rp.'.duit($k);
-				$list['saldo'] = 'Rp.'.duit($s);
 				$list['item'] = $item;
 				header('content-type: application/json');
 				echo json_encode($list);
@@ -83,20 +104,30 @@
 
 			case 'img':
 				$src = @mysql_real_escape_string($_GET['src']);
+				$jenis = @mysql_real_escape_string($_GET['jenis']);
 				$src = explode('-', $src);
-				$m = $src[1];
-				$y = $src[0];
+				$m = $src[0];
+				$y = $src[1];
+
+				$filter = ' ';
+				if (!empty($jenis)) {
+					$filter = ' and jenis ='.$jenis.' ';
+				}
 
 				$sql->db_Select(
 					'transaksi',
-					'memo',
-					'where type=2 and DATE_FORMAT(date, "%Y") = '.$y.' AND DATE_FORMAT(date, "%m") = '.$m
+					'memo, `name`',
+					'where type=2 and DATE_FORMAT(date, "%Y") = '.$y.' AND DATE_FORMAT(date, "%m") = '.$m.$filter
 				);
 				$hasil = array();
 				while ($data = $sql->db_Fetch()) {
 					$json = json_decode($data['memo']);
 					if (!empty($json->file)) {
-						array_push($hasil, $json->file);
+						$res = array(
+							'name' => $data['name'],
+							'file' => $json->file,
+						);
+						array_push($hasil, $res);
 					}
 				}
 				header('content-type: application/json');

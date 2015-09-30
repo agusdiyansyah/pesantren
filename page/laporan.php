@@ -1,3 +1,6 @@
+<?php  
+    $now = date('m').'-'.date('Y');
+?>
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs pull-right">
     	<li>
@@ -15,7 +18,7 @@
                             </span>
                         </span>
 
-                        <input type='text' class="form-control date" name="src"/>
+                        <input type='text' class="form-control date" name="src" value="<?php echo $now ?>" />
 
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-default">
@@ -62,20 +65,19 @@
 
     <input type="hidden" name="type" value="" class='type'>
     <input type="hidden" name="tampil" value="list" class='tampil'>
+    <input type="hidden" name="jenis" value="" class='jenis'>
 
     <div class="box-body">
     	
     </div>
 </div>
 <?php  
-    $now = date('Y').'-'.date('m');
 	$js = "
 	<script>
 		// $('body').removeClass('sidebar-collapse');
         var engine  = '".module."laporan/ajax.php';
         var module  = '".module."';
         var vendor  = '".vendor."';
-        var date    = '".$now."';
 	</script>
     <script src='".vendor."plugins/jquery-validation/jquery.validate.min.js'></script>
     <script src='".module."laporan/render.js'></script>

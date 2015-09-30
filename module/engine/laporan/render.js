@@ -5,7 +5,7 @@ function render (tgl, id, type, src) {
         if (type==1) {
             th = '<th>Debit</th>';
         } else if(type==2){
-            th = '<th>Kredit</th>';
+            th = '<th>Jenis</th> <th>Kredit</th>';
         } else{
             th = '<th>Debit</th>'+
                  '<th>Kredit</th>'+
@@ -27,7 +27,7 @@ function render (tgl, id, type, src) {
             if (type==1) {
                 td = '<th>'+data.d+'</th>';
             } else if(type==2){
-                td = '<th>'+data.k+'</th>';
+                td = '<th>'+data.jenis_val+'</th> <th>'+data.k+'</th>';
             } else{
                 td = '<th>'+data.d+'</th>'+
                      '<th>'+data.k+'</th>'+
@@ -52,11 +52,19 @@ function render (tgl, id, type, src) {
                 '</table>'+
             '';
         } else if(type==2){
-            if (src != '') {
+            if (src) {
                 tag+=''+
                             '<tr>'+
-                                '<td colspan="3"><b>Total Kredit</b></td>'+
+                                '<td colspan="4"><b>Total Pemasukkan</td>'+
+                                '<td><b>'+json.d_tot+'</b></td>'+
+                            '</tr>'+
+                            '<tr>'+
+                                '<td colspan="4"><b>Total Kredit Pada Jenis Pengeluaran '+json.jenis+'</b></td>'+
                                 '<td><b>'+json.kredit+'</b></td>'+
+                            '</tr>'+
+                            '<tr>'+
+                                '<td colspan="4"><b>Sisa saldo</b></td>'+
+                                '<td><b>'+json.saldo+'</b></td>'+
                             '</tr>'+
                         '</tbody>'+
                     '</table>'+
@@ -64,7 +72,7 @@ function render (tgl, id, type, src) {
             } else{
                 tag+=''+
                             '<tr>'+
-                                '<td colspan="3"><b>Total Kredit</b></td>'+
+                                '<td colspan="4"><b>Total Kredit</b></td>'+
                                 '<td><b>'+json.kredit+'</b></td>'+
                             '</tr>'+
                         '</tbody>'+

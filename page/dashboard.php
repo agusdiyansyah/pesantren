@@ -18,7 +18,7 @@
     </div>
 </div>
 <?php  
-    $now = date('Y').'-'.date('m');
+    $now = date('m').'-'.date('Y');
 	$js = "
 	<script>
 		// $('body').removeClass('sidebar-collapse');
